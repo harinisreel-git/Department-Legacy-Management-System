@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gourmet Haven | Fine Dining & Online Ordering</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Tailwind Setup -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            gold: '#D4AF37',
+                            dark: '#111827',
+                            accent: '#E53E3E',
+                            light: '#F9FAFB'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+        }
+        .hero-bg {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans leading-normal">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="fixed w-full z-50 bg-gray-900/95 text-white backdrop-blur shadow-lg transition-all border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('home')">
+                    <i class="fa-solid fa-utensils text-brand-gold text-2xl"></i>
+                    <span class="text-2xl font-bold tracking-wide text-brand-gold">Gourmet Haven</span>
+                </div>
+                
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex space-x-6 items-center text-sm font-medium">
+                    <a href="#home" class="hover:text-brand-gold transition">Home</a>
+                    <a href="#menu" class="hover:text-brand-gold transition">Digital Menu</a>
+                    <a href="#reservation" class="hover:text-brand-gold transition">Table Booking</a>
+                    <a href="#offers" class="hover:text-brand-gold transition">Offers</a>
+                    <a href="#gallery" class="hover:text-brand-gold transition">Gallery</a>
+                    <a href="#reviews" class="hover:text-brand-gold transition">Reviews</a>
+                    <a href="#contact" class="hover:text-brand-gold transition">Contact</a>
+                </div>
+
+                <!-- Right Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button onclick="toggleCartModal()" class="relative p-2 text-gray-300 hover:text-brand-gold">
+                        <i class="fa-solid fa-cart-shopping text-xl"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-brand-accent text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+                    </button>
+                    <button onclick="toggleAuthModal()" class="bg-brand-gold text-gray-900 px-4 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition">
+                        <i class="fa-regular fa-user mr-2"></i>Login
+                    </button>
+                    <button onclick="switchView('admin')" class="bg-gray-800 border border-brand-gold/30 text-brand-gold px-3 py-2 rounded-lg text-xs hover:bg-gray-700">
+                        Admin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SECTION 1: HOME PAGE HERO & BANNER -->
+    <section id="home" class="hero-bg min-h-screen flex items-center justify-center text-center text-white pt-20 px-4">
+        <div class="max-w-3xl">
+            <span class="text-brand-gold font-semibold uppercase tracking-widest text-sm mb-2 block">Welcome to Culinary Excellence</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">Taste the Fine Art of Cooking</h1>
+            <p class="text-lg md:text-xl text-gray-300 mb-8">Experience authentic flavors crafted with passion, served in an ambient fine-dining atmosphere.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#menu" class="bg-brand-gold text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-yellow-500 transition shadow-lg">Explore Menu</a>
+                <a href="#reservation" class="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-xl hover:bg-white hover:text-gray-900 transition">Book a Table</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: OFFERS & DISCOUNTS BANNER -->
+    <section id="offers" class="py-12 bg-brand-gold/10 border-y border-brand-gold/20">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Current Offers & Combo Deals</h2>
+                <p class="text-gray-600">Grab your favorite deals now!</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-md border-l-4 border-brand-gold flex items-center space-x-4">
+                    <i class="fa-solid fa-gift text-4xl text-brand-gold"></i>
+                    <div>
+                        <h3 class="font-bold text-lg">FLAT 20% OFF</h3>
+                        <p class="text-sm text-gray-500">On all online orders above $50</p>
+                        <span class="text-xs bg-gray-100 font-mono px-2 py-1 rounded text-brand-accent mt-2 inline-block">Code: HAVEN20</span>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border-l-4 border-brand-accent flex items-center space-x-4">
+                    <i class="fa-solid fa-utensils text-4xl text-brand-accent"></i>
+                    <div>
+                        <h3 class="font-bold text-lg">Weekend Family Combo</h3>
+                        <p class="text-sm text-gray-500">2 Mains + 2 Drinks + 1 Dessert @ $39</p>
+                        <span class="text-xs bg-gray-100 font-mono px-2 py-1 rounded text-brand-accent mt-2 inline-block">Code: COMBO39</span>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border-l-4 border-green-500 flex items-center space-x-4">
+                    <i class="fa-solid fa-wine-glass text-4xl text-green-500"></i>
+                    <div>
+                        <h3 class="font-bold text-lg">Complimentary Drinks</h3>
+                        <p class="text-sm text-gray-500">Free mocktail with table reservations</p>
+                        <span class="text-xs bg-gray-100 font-mono px-2 py-1 rounded text-brand-accent mt-2 inline-block">Automatic Claim</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: DIGITAL MENU (WITH FILTERS & CART) -->
+    <section id="menu" class="py-20 max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-3">Our Digital Menu</h2>
+            <p class="text-gray-600">Fresh ingredients, cooked to order.</p>
+            
+            <!-- Category Filter Buttons -->
+            <div class="flex justify-center flex-wrap gap-3 mt-8" id="category-filters">
+                <button onclick="filterMenu('all')" class="menu-filter-btn active bg-brand-gold text-gray-900 font-semibold px-5 py-2 rounded-full text-sm">All</button>
+                <button onclick="filterMenu('Veg')" class="menu-filter-btn bg-gray-200 text-gray-700 font-semibold px-5 py-2 rounded-full text-sm hover:bg-gray-300">Veg</button>
+                <button onclick="filterMenu('Non-Veg')" class="menu-filter-btn bg-gray-200 text-gray-700 font-semibold px-5 py-2 rounded-full text-sm hover:bg-gray-300">Non-Veg</button>
+                <button onclick="filterMenu('Desserts')" class="menu-filter-btn bg-gray-200 text-gray-700 font-semibold px-5 py-2 rounded-full text-sm hover:bg-gray-300">Desserts</button>
+            </div>
+        </div>
+
+        <!-- Menu Items Grid -->
+        <div id="menu-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Dynamic Menu Content via JS -->
+        </div>
+    </section>
+
+    <!-- SECTION 4: TABLE RESERVATION -->
+    <section id="reservation" class="py-20 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-extrabold text-brand-gold mb-2">Book a Table</h2>
+                <p class="text-gray-400">Reserve your spot online for a seamless dining experience.</p>
+            </div>
+            <form id="reservation-form" onsubmit="handleReservation(event)" class="bg-gray-800 p-8 rounded-2xl shadow-xl space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Full Name</label>
+                        <input type="text" id="res-name" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Phone Number</label>
+                        <input type="tel" id="res-phone" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Date</label>
+                        <input type="date" id="res-date" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Time Slot</label>
+                        <select id="res-time" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-gold">
+                            <option>12:00 PM - Lunch</option>
+                            <option>02:00 PM - Lunch</option>
+                            <option>07:00 PM - Dinner</option>
+                            <option>09:00 PM - Dinner</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Guests</label>
+                        <input type="number" id="res-guests" min="1" max="20" value="2" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Special Requests</label>
+                        <input type="text" id="res-notes" placeholder="Window seat, anniversary, etc." class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-brand-gold text-gray-900 font-bold py-4 rounded-xl hover:bg-yellow-500 transition">Confirm Table Booking</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- SECTION 5: GALLERY -->
+    <section id="gallery" class="py-20 max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-extrabold text-gray-900">Ambience & Food Gallery</h2>
+            <p class="text-gray-600">A glance into our restaurant aesthetics.</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=600&q=80" class="rounded-xl h-60 w-full object-cover hover:scale-105 transition duration-300">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" class="rounded-xl h-60 w-full object-cover hover:scale-105 transition duration-300">
+            <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80" class="rounded-xl h-60 w-full object-cover hover:scale-105 transition duration-300">
+            <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=600&q=80" class="rounded-xl h-60 w-full object-cover hover:scale-105 transition duration-300">
+        </div>
+    </section>
+
+    <!-- SECTION 6: REVIEWS & RATINGS -->
+    <section id="reviews" class="py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-extrabold text-gray-900">Customer Reviews</h2>
+                <p class="text-gray-600">See what our food lovers say about us.</p>
+            </div>
+            
+            <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Dynamic Reviews Inserted Here -->
+            </div>
+
+            <!-- Add Review Form -->
+            <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow">
+                <h3 class="text-xl font-bold mb-4">Leave Your Feedback</h3>
+                <form id="review-form" onsubmit="submitReview(event)" class="space-y-4">
+                    <input type="text" id="rev-name" placeholder="Your Name" required class="w-full border rounded-lg p-3">
+                    <select id="rev-rating" class="w-full border rounded-lg p-3">
+                        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                        <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                        <option value="3">⭐⭐⭐ (3/5)</option>
+                    </select>
+                    <textarea id="rev-comment" placeholder="Write your review here..." required class="w-full border rounded-lg p-3"></textarea>
+                    <button type="submit" class="bg-gray-900 text-white font-bold px-6 py-3 rounded-lg hover:bg-gray-800 transition">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 7: CONTACT & LOCATION -->
+    <section id="contact" class="py-20 max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div>
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-6">Contact & Location</h2>
+            <div class="space-y-4 text-gray-600 mb-8">
+                <p><i class="fa-solid fa-location-dot text-brand-gold w-6"></i> 123 Culinary Avenue, Foodie City, FC 56001</p>
+                <p><i class="fa-solid fa-phone text-brand-gold w-6"></i> +1 (555) 019-2834</p>
+                <p><i class="fa-solid fa-envelope text-brand-gold w-6"></i> reservations@gourmethaven.com</p>
+                <p><i class="fa-solid fa-clock text-brand-gold w-6"></i> Mon - Sun: 11:00 AM - 11:00 PM</p>
+            </div>
+        </div>
+        <div class="h-80 bg-gray-300 rounded-2xl overflow-hidden shadow-md">
+            <!-- Simulated Google Map Frame -->
+            <iframe class="w-full h-full border-0" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.83543450937!2d144.9537298153158!3d-37.81720997975171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4c2b349649%3A0xb6899234e561db11!2sEnvato!5e0!3m2!1sen!2sin!4v1614134823282!5m2!1sen!2sin" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </section>
+
+    <!-- MODAL: ONLINE CART & CHECKOUT -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex justify-end">
+        <div class="bg-white w-full max-w-md h-full shadow-2xl p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h3 class="text-xl font-bold">Your Order Cart</h3>
+                    <button onclick="toggleCartModal()" class="text-gray-500 hover:text-black"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+                <div id="cart-items" class="space-y-4 max-h-[60vh] overflow-y-auto">
+                    <!-- Dynamic Cart Items -->
+                </div>
+            </div>
+            <div class="border-t pt-4">
+                <div class="flex justify-between font-bold text-lg mb-4">
+                    <span>Total Amount:</span>
+                    <span id="cart-total">$0.00</span>
+                </div>
+                <button onclick="checkoutOrder()" class="w-full bg-brand-gold text-gray-900 font-bold py-3 rounded-xl hover:bg-yellow-500 transition">Place Order Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CUSTOMER AUTH / PROFILE -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-black"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-2xl font-bold mb-4" id="auth-title">Customer Login</h3>
+            <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
+                <input type="email" id="auth-email" placeholder="Email Address" required class="w-full border rounded-lg p-3">
+                <input type="password" id="auth-password" placeholder="Password" required class="w-full border rounded-lg p-3">
+                <button type="submit" class="w-full bg-brand-gold font-bold py-3 rounded-lg">Login / Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD OVERLAY VIEW -->
+    <div id="admin-dashboard" class="fixed inset-0 bg-gray-900 z-50 hidden overflow-y-auto p-6 text-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+                <h2 class="text-3xl font-bold text-brand-gold">Admin Management Dashboard</h2>
+                <button onclick="switchView('home')" class="bg-gray-800 border border-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-700">Exit Admin Panel</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Manage Menu -->
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <h3 class="text-xl font-bold mb-4">Add New Menu Item</h3>
+                    <form onsubmit="addMenuItem(event)" class="space-y-4">
+                        <input type="text" id="new-item-name" placeholder="Item Name" required class="w-full bg-gray-700 border-none rounded p-3 text-white">
+                        <input type="number" id="new-item-price" placeholder="Price ($)" step="0.01" required class="w-full bg-gray-700 border-none rounded p-3 text-white">
+                        <select id="new-item-category" class="w-full bg-gray-700 border-none rounded p-3 text-white">
+                            <option value="Veg">Veg</option>
+                            <option value="Non-Veg">Non-Veg</option>
+                            <option value="Desserts">Desserts</option>
+                        </select>
+                        <input type="url" id="new-item-img" placeholder="Image URL" required class="w-full bg-gray-700 border-none rounded p-3 text-white">
+                        <button type="submit" class="bg-brand-gold text-gray-900 font-bold px-4 py-2 rounded w-full">Add Item</button>
+                    </form>
+                </div>
+
+                <!-- Orders & Reservations Tracker -->
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 space-y-6">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Tracked Reservations</h3>
+                        <div id="admin-reservations-list" class="space-y-2 max-h-40 overflow-y-auto text-sm text-gray-300">
+                            <!-- JS Populated -->
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Tracked Online Orders</h3>
+                        <div id="admin-orders-list" class="space-y-2 max-h-40 overflow-y-auto text-sm text-gray-300">
+                            <!-- JS Populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT BACKEND LOGIC & DATA MANAGEMENT -->
+    <script>
+        // Default System Database State
+        const defaultMenu = [
+            { id: 1, name: "Truffle Mushroom Pasta", price: 18.99, category: "Veg", image: "https://images.unsplash.com/photo-1621996346565-e3d5d6281318?auto=format&fit=crop&w=500&q=80" },
+            { id: 2, name: "Grilled Prime Ribeye", price: 34.50, category: "Non-Veg", image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=500&q=80" },
+            { id: 3, name: "Classic Lava Cake", price: 9.99, category: "Desserts", image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=500&q=80" }
+        ];
+
+        const defaultReviews = [
+            { name: "Sarah Jenkins", rating: 5, comment: "The ambience and the prime ribeye were absolute perfection! Highly recommended." },
+            { name: "Michael Chang", rating: 5, comment: "Super smooth table reservation and online ordering experience." }
+        ];
+
+        // State Initialization
+        let menuData = JSON.parse(localStorage.getItem('restaurant_menu')) || defaultMenu;
+        let reviewsData = JSON.parse(localStorage.getItem('restaurant_reviews')) || defaultReviews;
+        let cart = [];
+        let reservations = JSON.parse(localStorage.getItem('restaurant_reservations')) || [];
+        let orders = JSON.parse(localStorage.getItem('restaurant_orders')) || [];
+
+        // RENDER DIGITAL MENU
+        function renderMenu(category = 'all') {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            
+            const filtered = category === 'all' ? menuData : menuData.filter(i => i.category === category);
+            
+            filtered.forEach(item => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-md border hover:shadow-xl transition">
+                        <img src="${item.image}" class="h-48 w-full object-cover">
+                        <div class="p-5">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-bold text-lg">${item.name}</h3>
+                                <span class="bg-brand-gold/20 text-brand-gold text-xs px-2 py-1 rounded font-bold">${item.category}</span>
+                            </div>
+                            <p class="text-xl font-bold text-gray-900 mb-4">$${item.price.toFixed(2)}</p>
+                            <button onclick="addToCart(${item.id})" class="w-full bg-gray-900 text-white font-semibold py-2 rounded-lg hover:bg-brand-gold hover:text-gray-900 transition">
+                                <i class="fa-solid fa-plus mr-2"></i>Add to Order
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // FILTER MENU
+        function filterMenu(cat) {
+            document.querySelectorAll('.menu-filter-btn').forEach(btn => btn.classList.remove('bg-brand-gold', 'text-gray-900'));
+            renderMenu(cat);
+        }
+
+        // CART MANAGEMENT
+        function addToCart(id) {
+            const item = menuData.find(i => i.id === id);
+            cart.push(item);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const container = document.getElementById('cart-items');
+            container.innerHTML = '';
+            
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price;
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                        <div>
+                            <h4 class="font-bold text-sm">${item.name}</h4>
+                            <span class="text-xs text-gray-500">$${item.price.toFixed(2)}</span>
+                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700 text-sm"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+            document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function toggleCartModal() {
+            document.getElementById('cart-modal').classList.toggle('hidden');
+        }
+
+        function checkoutOrder() {
+            if(cart.length === 0) return alert("Your cart is empty!");
+            orders.push({ id: Date.now(), items: [...cart], date: new Date().toLocaleDateString() });
+            localStorage.setItem('restaurant_orders', JSON.stringify(orders));
+            cart = [];
+            updateCartUI();
+            toggleCartModal();
+            alert("Order placed successfully! Track status in customer portal.");
+            renderAdminData();
+        }
+
+        // TABLE RESERVATION
+        function handleReservation(e) {
+            e.preventDefault();
+            const res = {
+                name: document.getElementById('res-name').value,
+                phone: document.getElementById('res-phone').value,
+                date: document.getElementById('res-date').value,
+                time: document.getElementById('res-time').value,
+                guests: document.getElementById('res-guests').value
+            };
+            reservations.push(res);
+            localStorage.setItem('restaurant_reservations', JSON.stringify(reservations));
+            alert(`Table booked successfully for ${res.name} on ${res.date} at ${res.time}!`);
+            document.getElementById('reservation-form').reset();
+            renderAdminData();
+        }
+
+        // REVIEWS
+        function renderReviews() {
+            const container = document.getElementById('reviews-grid');
+            container.innerHTML = '';
+            reviewsData.forEach(r => {
+                container.innerHTML += `
+                    <div class="bg-white p-6 rounded-2xl shadow">
+                        <div class="text-brand-gold mb-2">${'★'.repeat(r.rating)}</div>
+                        <p class="text-gray-600 italic mb-4">"${r.comment}"</p>
+                        <h4 class="font-bold text-sm text-gray-900">- ${r.name}</h4>
+                    </div>
+                `;
+            });
+        }
+
+        function submitReview(e) {
+            e.preventDefault();
+            const rev = {
+                name: document.getElementById('rev-name').value,
+                rating: parseInt(document.getElementById('rev-rating').value),
+                comment: document.getElementById('rev-comment').value
+            };
+            reviewsData.unshift(rev);
+            localStorage.setItem('restaurant_reviews', JSON.stringify(reviewsData));
+            renderReviews();
+            document.getElementById('review-form').reset();
+        }
+
+        // ADMIN FUNCTIONS
+        function addMenuItem(e) {
+            e.preventDefault();
+            const newItem = {
+                id: Date.now(),
+                name: document.getElementById('new-item-name').value,
+                price: parseFloat(document.getElementById('new-item-price').value),
+                category: document.getElementById('new-item-category').value,
+                image: document.getElementById('new-item-img').value
+            };
+            menuData.push(newItem);
+            localStorage.setItem('restaurant_menu', JSON.stringify(menuData));
+            renderMenu();
+            alert("Menu item added successfully!");
+        }
+
+        function renderAdminData() {
+            const resList = document.getElementById('admin-reservations-list');
+            const orderList = document.getElementById('admin-orders-list');
+            
+            resList.innerHTML = reservations.map(r => `<div class="p-2 bg-gray-700 rounded">${r.name} - ${r.date} (${r.time}) [${r.guests} Guests]</div>`).join('');
+            orderList.innerHTML = orders.map(o => `<div class="p-2 bg-gray-700 rounded">Order #${o.id} - ${o.items.length} Items (${o.date})</div>`).join('');
+        }
+
+        // MODALS & NAVIGATION SWITCH
+        function switchView(view) {
+            if(view === 'admin') {
+                renderAdminData();
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+            } else {
+                document.getElementById('admin-dashboard').classList.add('hidden');
+            }
+        }
+
+        function toggleAuthModal() {
+            document.getElementById('auth-modal').classList.toggle('hidden');
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            alert("Authenticated successfully!");
+            toggleAuthModal();
+        }
+
+        // INITIAL LOAD
+        renderMenu();
+        renderReviews();
+    </script>
+</body>
+</html>
