@@ -1,0 +1,6 @@
+1. **Integrated Alumni & Student Directory:** Provides a searchable record of past students, their academic batches, and career achievements for reference by juniors, staff, and visiting companies.
+2. **Legacy Project & Research Archive:** Stores capstone projects, research papers, and technical innovations so future batches can learn from them and recruiters can inspect student work.
+3. **Interactive History & Achievements Timeline:** Displays a chronological showcase of departmental milestones, historical awards, accreditation records, and major accomplishments over the years.
+4. **Faculty & Infrastructure Showcase:** Highlights staff profiles, research publications, lab facilities, and event photo galleries for parents and visiting guests to explore.
+5. **Placement & Recruiter Records:** Shows past recruiting companies, job roles offered, and placement statistics to demonstrate department success to parents and industry partners.
+6. **Guest Portal with Inquiry & Feedback:** Gives visitors seamless, search-enabled access to public legacy records while allowing parents, companies, and staff to submit direct inquiries or feedback.
