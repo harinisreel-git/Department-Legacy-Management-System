@@ -1,1 +1,9 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+backend/.venv/
+backend/data/*.db
 .env
+.pytest_cache/
