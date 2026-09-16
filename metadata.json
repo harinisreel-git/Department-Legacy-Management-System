@@ -1,0 +1,8 @@
+{
+  "name": "Department Legacy Management System",
+  "description": "A comprehensive digital archive of student achievements, capstone research, historical milestones, distinguished faculty, and placement excellence for the Department of Information Technology.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1118,6 +1118,6 @@ async function boot() {
 }
 
 boot().catch((err) => {
-  $("homeStats").innerHTML = `<div class="card"><p style="color:var(--rose);">Could not connect to FastAPI backend. Ensure server is running on http://127.0.0.1:8000. (${escapeHtml(err.message)})</p></div>`;
+  $("homeStats").innerHTML = `<div class="card"><p style="color:var(--rose);">Could not connect to backend server. (${escapeHtml(err.message)})</p></div>`;
 });
 
