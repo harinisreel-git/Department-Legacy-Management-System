@@ -2,9 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Department Legacy Management System | Information Technology</title>
   <meta name="description" content="A comprehensive digital archive of student achievements, capstone research, historical milestones, distinguished faculty, and placement excellence for the Department of Information Technology." />
+
+  <!-- Progressive Web App Configuration -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0d9488" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="IT Legacy" />
+  <meta name="application-name" content="Department Legacy Management System" />
+  <meta name="msapplication-TileColor" content="#0d9488" />
+
+  <!-- Icons & Splash Assets -->
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,15 +56,21 @@
       </form>
 
       <div class="auth-actions">
-        <button class="btn btn-ghost" id="guestViewBtn">
+        <!-- PWA In-App Install Button -->
+        <button class="btn btn-outline btn-pwa-install hidden" id="pwaInstallBtn" aria-label="Install Department App" title="Install App">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Install App</span>
+        </button>
+
+        <button class="btn btn-ghost" id="guestViewBtn" aria-label="Switch to Guest View" title="Guest View">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
           <span>Guest View</span>
         </button>
-        <button class="btn btn-primary" id="staffLoginBtn">
+        <button class="btn btn-primary" id="staffLoginBtn" aria-label="Staff Login" title="Staff Login">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
           <span>Staff Login</span>
         </button>
-        <button class="btn btn-danger hidden" id="logoutBtn">
+        <button class="btn btn-danger hidden" id="logoutBtn" aria-label="Logout" title="Logout">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
           <span>Logout</span>
         </button>
@@ -56,6 +80,33 @@
 
   <div class="shell">
     <aside class="sidebar" id="sidebar">
+      <!-- Mobile Drawer Header -->
+      <div class="sidebar-header-mobile">
+        <div class="sidebar-mobile-brand">
+          <div class="brand-badge brand-badge-sm">
+            <span class="badge-text">IT</span>
+          </div>
+          <div class="brand-text">
+            <span class="brand-kicker">Department of IT</span>
+            <span class="brand-title-sm">Legacy Records</span>
+          </div>
+        </div>
+        <button class="close-sidebar-btn" id="closeSidebarBtn" aria-label="Close navigation menu" title="Close menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Mobile Search inside Drawer -->
+      <div class="sidebar-mobile-search">
+        <form id="mobileSearchForm" class="mobile-search-form" role="search">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input id="mobileSearchInput" type="search" placeholder="Search alumni, research, faculty..." autocomplete="off" />
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">Search</button>
+        </form>
+      </div>
+
       <div class="nav-section">
         <p class="nav-heading">Public Records</p>
         <nav class="nav-list">
@@ -86,6 +137,10 @@
           <a href="#feedback" class="nav-link" data-target="feedback">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
             <span>Guest Inquiry</span>
+          </a>
+          <a href="#ai-assistant" class="nav-link" data-target="ai-assistant">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 3.37 2.1 6.25 5.09 7.37L8 22l4.47-1.49c.5.07 1.01.11 1.53.11a8 8 0 0 0 8-8 8 8 0 0 0-8-8z"></path><circle cx="9" cy="10" r="1.5"></circle><circle cx="15" cy="10" r="1.5"></circle></svg>
+            <span>AI Assistant</span>
           </a>
         </nav>
       </div>
@@ -129,6 +184,12 @@
       </div>
 
       <div class="sidebar-foot">
+        <div class="sidebar-pwa-wrap hidden" id="sidebarPwaWrap">
+          <button class="btn btn-outline btn-pwa-install w-full" id="pwaInstallBtnSidebar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Install Application</span>
+          </button>
+        </div>
         <div class="system-status">
           <span class="status-indicator online"></span>
           <span id="roleLabel">Viewing as Guest</span>
@@ -302,7 +363,7 @@
         </div>
         <div class="stat-grid" id="placementStats"></div>
         <div class="table-card">
-          <div class="table-wrap">
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Placement records table, swipe or scroll horizontally to view all columns">
             <table class="data-table">
               <thead>
                 <tr>
@@ -365,6 +426,110 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 <span>Send Message</span>
               </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- 8b. AI ASSISTANT CHATBOT -->
+      <section class="page" id="ai-assistant">
+        <div class="page-head ai-chat-head">
+          <div class="head-titles">
+            <div class="ai-title-row">
+              <h2>Department AI Assistant</h2>
+              <span class="ai-status-pill">
+                <span class="pulse-dot-emerald"></span>
+                <span id="aiStatusText">Database Grounded</span>
+              </span>
+            </div>
+            <p>Ask natural-language questions about students, alumni, capstone projects, faculty specializations, placement statistics, or department history.</p>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-secondary btn-sm" id="chatClearBtn" type="button" title="Clear chat history">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>Clear Conversation</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Prompts Chips -->
+        <div class="ai-prompts-card card">
+          <div class="ai-prompts-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span>Suggested Inquiries</span>
+          </div>
+          <div class="ai-prompt-chips" id="aiPromptChips">
+            <button type="button" class="prompt-chip" data-prompt="Who is the Head of Department and what is their specialization?">Who is the Head of Department?</button>
+            <button type="button" class="prompt-chip" data-prompt="What was the highest placement package recorded and by which company?">Top Placement Package?</button>
+            <button type="button" class="prompt-chip" data-prompt="Which capstone project used Flutter and BLE beacons?">BLE Beacon Capstone Project?</button>
+            <button type="button" class="prompt-chip" data-prompt="Tell me about alumni working at Zoho Corporation and Amazon AWS.">Alumni at Zoho &amp; AWS?</button>
+            <button type="button" class="prompt-chip" data-prompt="When was the department founded and when did it receive autonomous accreditation?">History &amp; Milestones?</button>
+            <button type="button" class="prompt-chip" data-prompt="What laboratories and AI computing facilities are available?">Department Laboratories?</button>
+            <button type="button" class="prompt-chip" data-prompt="How can visitors or recruiters submit guest inquiries and feedback?">Guest Inquiry Portal?</button>
+          </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="ai-chat-card card">
+          <div class="chat-messages-scroll" id="chatMessagesScroll">
+            <div id="chatMessages" class="chat-messages">
+              <!-- Welcome message -->
+              <div class="chat-bubble chat-bubble-ai">
+                <div class="bubble-avatar">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 3.37 2.1 6.25 5.09 7.37L8 22l4.47-1.49c.5.07 1.01.11 1.53.11a8 8 0 0 0 8-8 8 8 0 0 0-8-8z"></path><circle cx="9" cy="10" r="1.5"></circle><circle cx="15" cy="10" r="1.5"></circle></svg>
+                </div>
+                <div class="bubble-body">
+                  <div class="bubble-sender">Department AI Assistant</div>
+                  <div class="bubble-content">
+                    <p>Welcome to the <strong>Department of Information Technology Legacy Management System</strong> AI Assistant!</p>
+                    <p>I have direct access to our verified database and can assist you with:</p>
+                    <ul>
+                      <li><strong>Students &amp; Alumni:</strong> Roll numbers, graduation batches, placements, and current companies</li>
+                      <li><strong>Projects &amp; Research:</strong> Capstone projects, research publications, tech stacks, and authors</li>
+                      <li><strong>History &amp; Timeline:</strong> Department inception, accreditations, and achievements</li>
+                      <li><strong>Faculty &amp; Labs:</strong> Professor designations, research specializations, and lab facilities</li>
+                      <li><strong>Placement Records:</strong> Recruiter statistics, offers, and salary packages (LPA)</li>
+                      <li><strong>Guest Inquiries:</strong> Submission guidelines for visitors, parents, and recruiters</li>
+                    </ul>
+                    <p class="bubble-note">Tip: Select a suggested question above or type your question in plain English below.</p>
+                  </div>
+                  <div class="bubble-time">Just now</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Typing indicator -->
+            <div class="chat-typing-indicator" id="chatTypingIndicator" hidden>
+              <div class="bubble-avatar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 3.37 2.1 6.25 5.09 7.37L8 22l4.47-1.49c.5.07 1.01.11 1.53.11a8 8 0 0 0 8-8 8 8 0 0 0-8-8z"></path><circle cx="9" cy="10" r="1.5"></circle><circle cx="15" cy="10" r="1.5"></circle></svg>
+              </div>
+              <div class="typing-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+              <span class="typing-label">Consulting department database...</span>
+            </div>
+          </div>
+
+          <!-- Chat Input Form -->
+          <form id="chatForm" class="chat-form" novalidate>
+            <div class="chat-input-wrapper">
+              <textarea
+                id="chatInput"
+                class="chat-input"
+                rows="1"
+                placeholder="Ask about alumni, capstone projects, faculty, placements, or history..."
+                aria-label="Ask department AI assistant"
+                required
+              ></textarea>
+              <button type="submit" id="chatSendBtn" class="btn btn-primary chat-send-btn" aria-label="Send query">
+                <span>Send</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
+            <div class="chat-footer-info">
+              <span>Answers are generated strictly from verified department database records. If data is unavailable, the assistant will inform you.</span>
             </div>
           </form>
         </div>
@@ -466,7 +631,7 @@
           <div class="table-header-compact">
             <h3>Registered Student Directory</h3>
           </div>
-          <div class="table-wrap">
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Registered student directory table, swipe or scroll horizontally to view all columns">
             <table class="data-table">
               <thead>
                 <tr>
@@ -748,7 +913,7 @@
             <div class="card-header-compact">
               <h3>Students by Batch Year</h3>
             </div>
-            <div class="table-wrap">
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Students by batch year summary table, swipe or scroll horizontally">
               <table class="data-table">
                 <thead>
                   <tr>
@@ -766,7 +931,7 @@
             <div class="card-header-compact">
               <h3>Placements by Year</h3>
             </div>
-            <div class="table-wrap">
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Placements by year summary table, swipe or scroll horizontally">
               <table class="data-table">
                 <thead>
                   <tr>
@@ -822,6 +987,63 @@
       </form>
     </div>
   </div>
+
+  <!-- iOS SAFARI PWA INSTALLATION GUIDE MODAL -->
+  <div class="modal-overlay hidden" id="iosInstallModal" role="dialog" aria-modal="true" aria-labelledby="iosModalTitle">
+    <div class="modal pwa-guide-modal">
+      <button class="close-modal" id="closeIosInstallModal" aria-label="Close installation guide">&times;</button>
+      <div class="modal-header">
+        <div class="modal-icon pwa-guide-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </div>
+        <h2 id="iosModalTitle">Install on iOS / Safari</h2>
+        <p>Add Department Legacy Records to your iPhone or iPad home screen for instant standalone access.</p>
+      </div>
+      <div class="pwa-steps-list">
+        <div class="pwa-step-item">
+          <span class="pwa-step-num">1</span>
+          <div class="pwa-step-text">
+            <strong>Tap the Share button</strong> in the Safari bottom toolbar (the square icon with an upward arrow <span class="ios-share-badge">&#x2300;</span>).
+          </div>
+        </div>
+        <div class="pwa-step-item">
+          <span class="pwa-step-num">2</span>
+          <div class="pwa-step-text">
+            Scroll down the share sheet and tap <strong>"Add to Home Screen"</strong>.
+          </div>
+        </div>
+        <div class="pwa-step-item">
+          <span class="pwa-step-num">3</span>
+          <div class="pwa-step-text">
+            Tap <strong>"Add"</strong> in the top-right corner. The app icon will appear directly on your home screen!
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary w-full mt-md" id="dismissIosGuideBtn">Got it, Thanks!</button>
+    </div>
+  </div>
+
+  <!-- OFFLINE CONNECTIVITY INDICATOR -->
+  <div id="offlineIndicator" class="offline-indicator hidden" role="status" aria-live="polite">
+    <span class="offline-dot"></span>
+    <span class="offline-text">Offline Mode — Viewing cached department records</span>
+  </div>
+
+  <!-- PWA UPDATE TOAST BANNER -->
+  <div id="pwaUpdateToast" class="pwa-update-toast hidden" role="alert">
+    <div class="pwa-update-content">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+      <span>A new version of the app is available!</span>
+    </div>
+    <button class="btn btn-primary btn-xs" id="pwaRefreshBtn">Update Now</button>
+  </div>
+
+  <!-- FLOATING AI ASSISTANT LAUNCHER -->
+  <button id="aiChatLauncher" class="ai-launcher-btn" aria-label="Open Department AI Assistant" title="Ask Department AI Assistant">
+    <span class="ai-launcher-pulse"></span>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 3.37 2.1 6.25 5.09 7.37L8 22l4.47-1.49c.5.07 1.01.11 1.53.11a8 8 0 0 0 8-8 8 8 0 0 0-8-8z"></path><circle cx="9" cy="10" r="1.5"></circle><circle cx="15" cy="10" r="1.5"></circle></svg>
+    <span class="ai-launcher-text">Ask AI</span>
+  </button>
 
   <div class="overlay" id="navOverlay"></div>
   <script src="script.js"></script>

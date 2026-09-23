@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="40%" stop-color="#134e4a" />
+      <stop offset="100%" stop-color="#042f2e" />
+    </linearGradient>
+    <linearGradient id="primaryTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="100%" stop-color="#0d9488" />
+    </linearGradient>
+    <linearGradient id="accentGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Container -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Subtle Inner Border -->
+  <rect x="24" y="24" width="464" height="464" rx="92" fill="none" stroke="url(#primaryTeal)" stroke-width="6" stroke-opacity="0.4" />
+
+  <!-- Shield / Crest Silhouette -->
+  <path d="M 256 76 L 396 136 C 396 268 336 376 256 428 C 176 376 116 268 116 136 Z"
+        fill="#0f172a" fill-opacity="0.75" stroke="url(#accentGold)" stroke-width="8" filter="url(#shadow)" />
+
+  <!-- Tech Grid / Circuit Accent -->
+  <circle cx="256" cy="116" r="8" fill="#2dd4bf" />
+  <line x1="256" y1="124" x2="256" y2="152" stroke="#2dd4bf" stroke-width="4" stroke-opacity="0.8" />
+  <line x1="196" y1="152" x2="316" y2="152" stroke="#2dd4bf" stroke-width="3" stroke-opacity="0.5" />
+
+  <!-- "IT" Monogram Text -->
+  <g font-family="system-ui, -apple-system, sans-serif" font-weight="900" text-anchor="middle">
+    <!-- Letter "I" -->
+    <path d="M 196 188 H 224 V 328 H 196 Z" fill="url(#primaryTeal)" />
+    <!-- Letter "T" -->
+    <path d="M 256 188 H 344 V 222 H 316 V 328 H 284 V 222 H 256 Z" fill="#ffffff" />
+  </g>
+
+  <!-- Archival Star Badge -->
+  <polygon points="256,356 264,374 284,375 268,388 273,408 256,396 239,408 244,388 228,375 248,374"
+           fill="url(#accentGold)" />
+
+  <!-- Bottom Archival Arc / Ribbon Banner -->
+  <path d="M 180 436 Q 256 460 332 436" fill="none" stroke="url(#primaryTeal)" stroke-width="5" stroke-linecap="round" stroke-opacity="0.85" />
+</svg>

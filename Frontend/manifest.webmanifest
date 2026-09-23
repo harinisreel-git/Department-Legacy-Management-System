@@ -1,0 +1,70 @@
+{
+  "id": "/",
+  "name": "Department Legacy Management System",
+  "short_name": "IT Legacy",
+  "description": "A comprehensive digital archive of student achievements, capstone research, historical milestones, distinguished faculty, and placement excellence.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "window-controls-overlay"],
+  "orientation": "any",
+  "background_color": "#f8fafc",
+  "theme_color": "#0d9488",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Department Overview",
+      "short_name": "Overview",
+      "description": "View department timeline, milestones, and statistics",
+      "url": "/#dashboard",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Students & Alumni",
+      "short_name": "Students",
+      "description": "Browse student honor roll and alumni directory",
+      "url": "/#students",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Projects & Research",
+      "short_name": "Projects",
+      "description": "Explore capstone innovations and patents",
+      "url": "/#projects",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI Legacy Assistant",
+      "short_name": "AI Chat",
+      "description": "Ask the intelligent department archive assistant",
+      "url": "/#aiChatSection",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -842,6 +842,11 @@ document.addEventListener("click", async (event) => {
 $("menuBtn").addEventListener("click", () => document.body.classList.toggle("nav-open"));
 $("navOverlay").addEventListener("click", () => document.body.classList.remove("nav-open"));
 
+const closeSidebar = $("closeSidebarBtn");
+if (closeSidebar) {
+  closeSidebar.addEventListener("click", () => document.body.classList.remove("nav-open"));
+}
+
 $("staffLoginBtn").addEventListener("click", () => {
   $("loginModal").hidden = false;
   $("usernameInput").focus();
@@ -905,19 +910,30 @@ $("loginForm").addEventListener("submit", async (event) => {
 /* ==========================================================================
    GLOBAL SEARCH & PUBLIC FILTERS
    ========================================================================== */
-$("globalSearchForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const query = $("globalSearchInput").value.trim();
+async function performSearch(query) {
   if (!query) return;
-
   try {
     const data = await api(`/search?q=${encodeURIComponent(query)}`);
     renderSearch(query, data);
     switchPage("search");
+    document.body.classList.remove("nav-open");
   } catch (err) {
     showToast(err.message, "error");
   }
+}
+
+$("globalSearchForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  performSearch($("globalSearchInput").value.trim());
 });
+
+const mobileSearchForm = $("mobileSearchForm");
+if (mobileSearchForm) {
+  mobileSearchForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    performSearch($("mobileSearchInput").value.trim());
+  });
+}
 
 $("studentSearchForm").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -1098,9 +1114,413 @@ $("placementForm").addEventListener("submit", async (event) => {
 $("plReset").addEventListener("click", resetPlacementForm);
 
 /* ==========================================================================
+   AI ASSISTANT CHATBOT LOGIC
+   ========================================================================== */
+const chatState = {
+  history: [],
+  isSending: false,
+};
+
+function formatChatMarkdown(text) {
+  if (!text) return "";
+  let safe = escapeHtml(text);
+  // Bold **text**
+  safe = safe.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  // Italic *text*
+  safe = safe.replace(/\*(.*?)\*/g, "<em>$1</em>");
+  // Code `code`
+  safe = safe.replace(/`([^`]+)`/g, "<code>$1</code>");
+
+  const lines = safe.split("\n");
+  let inList = false;
+  let html = "";
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("- ") || trimmed.startsWith("• ") || trimmed.startsWith("* ")) {
+      if (!inList) {
+        html += "<ul>";
+        inList = true;
+      }
+      html += `<li>${trimmed.replace(/^[-•*]\s+/, "")}</li>`;
+    } else {
+      if (inList) {
+        html += "</ul>";
+        inList = false;
+      }
+      if (trimmed) {
+        html += `<p>${trimmed}</p>`;
+      }
+    }
+  }
+  if (inList) html += "</ul>";
+  return html;
+}
+
+function appendChatBubble(role, contentHtml, isHtml = false) {
+  const container = $("chatMessages");
+  if (!container) return;
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const isUser = role === "user";
+
+  const bubble = document.createElement("div");
+  bubble.className = `chat-bubble chat-bubble-${isUser ? "user" : "ai"}`;
+
+  const avatarSvg = isUser
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`
+    : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 3.37 2.1 6.25 5.09 7.37L8 22l4.47-1.49c.5.07 1.01.11 1.53.11a8 8 0 0 0 8-8 8 8 0 0 0-8-8z"></path><circle cx="9" cy="10" r="1.5"></circle><circle cx="15" cy="10" r="1.5"></circle></svg>`;
+
+  bubble.innerHTML = `
+    <div class="bubble-avatar" aria-hidden="true">${avatarSvg}</div>
+    <div class="bubble-body">
+      <div class="bubble-sender">${isUser ? "You" : "Department AI Assistant"}</div>
+      <div class="bubble-content">
+        ${isHtml ? contentHtml : formatChatMarkdown(contentHtml)}
+      </div>
+      <div class="bubble-time">${timeStr}</div>
+    </div>
+  `;
+
+  container.appendChild(bubble);
+  scrollChatToBottom();
+}
+
+function scrollChatToBottom() {
+  const scrollArea = $("chatMessagesScroll");
+  if (scrollArea) {
+    scrollArea.scrollTop = scrollArea.scrollHeight;
+  }
+}
+
+async function sendChatMessage(queryText) {
+  const query = (queryText || $("chatInput").value || "").trim();
+  if (!query || chatState.isSending) return;
+
+  chatState.isSending = true;
+  $("chatSendBtn").disabled = true;
+  $("chatInput").value = "";
+
+  // Append user bubble
+  appendChatBubble("user", query, false);
+
+  // Show typing indicator
+  const typingIndicator = $("chatTypingIndicator");
+  if (typingIndicator) {
+    typingIndicator.hidden = false;
+    scrollChatToBottom();
+  }
+
+  try {
+    const data = await api("/chat", {
+      method: "POST",
+      body: JSON.stringify({
+        message: query,
+        history: chatState.history,
+      }),
+    });
+
+    const replyText = data.reply || "No response received from assistant.";
+    appendChatBubble("ai", replyText, false);
+
+    // Save to conversation history (keep last 12 turns for bounded context)
+    chatState.history.push({ role: "user", text: query });
+    chatState.history.push({ role: "model", text: replyText });
+    if (chatState.history.length > 12) {
+      chatState.history = chatState.history.slice(-12);
+    }
+  } catch (err) {
+    appendChatBubble(
+      "ai",
+      `Unable to process your question at this moment (${escapeHtml(err.message)}). Please try again or submit your inquiry to the Department Guest Portal.`,
+      false
+    );
+    showToast(err.message || "Failed to reach AI service", "error");
+  } finally {
+    if (typingIndicator) typingIndicator.hidden = true;
+    chatState.isSending = false;
+    $("chatSendBtn").disabled = false;
+    $("chatInput").focus();
+    scrollChatToBottom();
+  }
+}
+
+function resetChatConversation() {
+  chatState.history = [];
+  const container = $("chatMessages");
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="chat-bubble chat-bubble-ai">
+      <div class="bubble-avatar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 3.37 2.1 6.25 5.09 7.37L8 22l4.47-1.49c.5.07 1.01.11 1.53.11a8 8 0 0 0 8-8 8 8 0 0 0-8-8z"></path><circle cx="9" cy="10" r="1.5"></circle><circle cx="15" cy="10" r="1.5"></circle></svg>
+      </div>
+      <div class="bubble-body">
+        <div class="bubble-sender">Department AI Assistant</div>
+        <div class="bubble-content">
+          <p>Welcome to the <strong>Department of Information Technology Legacy Management System</strong> AI Assistant!</p>
+          <p>I have direct access to our verified database and can assist you with:</p>
+          <ul>
+            <li><strong>Students &amp; Alumni:</strong> Roll numbers, graduation batches, placements, and current companies</li>
+            <li><strong>Projects &amp; Research:</strong> Capstone projects, research publications, tech stacks, and authors</li>
+            <li><strong>History &amp; Timeline:</strong> Department inception, accreditations, and achievements</li>
+            <li><strong>Faculty &amp; Labs:</strong> Professor designations, research specializations, and lab facilities</li>
+            <li><strong>Placement Records:</strong> Recruiter statistics, offers, and salary packages (LPA)</li>
+            <li><strong>Guest Inquiries:</strong> Submission guidelines for visitors, parents, and recruiters</li>
+          </ul>
+          <p class="bubble-note">Tip: Select a suggested question above or type your question in plain English below.</p>
+        </div>
+        <div class="bubble-time">Just now</div>
+      </div>
+    </div>
+  `;
+  showToast("Chat conversation reset", "info");
+}
+
+// Chat Form and Input listeners
+const chatForm = $("chatForm");
+if (chatForm) {
+  chatForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    sendChatMessage();
+  });
+}
+
+const chatInput = $("chatInput");
+if (chatInput) {
+  chatInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  });
+}
+
+const chatClearBtn = $("chatClearBtn");
+if (chatClearBtn) {
+  chatClearBtn.addEventListener("click", resetChatConversation);
+}
+
+// Suggested prompt chips click listener
+const promptChipsContainer = $("aiPromptChips");
+if (promptChipsContainer) {
+  promptChipsContainer.addEventListener("click", (e) => {
+    const chip = e.target.closest(".prompt-chip");
+    if (!chip) return;
+    const prompt = chip.dataset.prompt;
+    if (prompt) {
+      $("chatInput").value = prompt;
+      sendChatMessage(prompt);
+    }
+  });
+}
+
+// Floating launcher button
+const aiLauncher = $("aiChatLauncher");
+if (aiLauncher) {
+  aiLauncher.addEventListener("click", () => {
+    switchPage("ai-assistant");
+    setTimeout(() => {
+      $("chatInput")?.focus();
+    }, 150);
+  });
+}
+
+/* ==========================================================================
+   PROGRESSIVE WEB APP (PWA) INITIALIZATION & LIFECYCLE
+   ========================================================================== */
+let deferredInstallPrompt = null;
+
+function initPWA() {
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  const isIOS = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+
+  const pwaInstallBtn = $("pwaInstallBtn");
+  const pwaInstallBtnSidebar = $("pwaInstallBtnSidebar");
+  const sidebarPwaWrap = $("sidebarPwaWrap");
+  const iosModal = $("iosInstallModal");
+  const closeIosModal = $("closeIosInstallModal");
+  const dismissIosGuideBtn = $("dismissIosGuideBtn");
+  const offlineIndicator = $("offlineIndicator");
+  const updateToast = $("pwaUpdateToast");
+  const refreshBtn = $("pwaRefreshBtn");
+
+  // Helper to show/hide install controls
+  function setInstallButtonsVisible(visible) {
+    if (isStandalone) {
+      if (pwaInstallBtn) pwaInstallBtn.classList.add("hidden");
+      if (sidebarPwaWrap) sidebarPwaWrap.classList.add("hidden");
+      return;
+    }
+    if (pwaInstallBtn) {
+      if (visible) pwaInstallBtn.classList.remove("hidden");
+      else pwaInstallBtn.classList.add("hidden");
+    }
+    if (sidebarPwaWrap) {
+      if (visible) sidebarPwaWrap.classList.remove("hidden");
+      else sidebarPwaWrap.classList.add("hidden");
+    }
+  }
+
+  // Handle install trigger
+  async function handleInstallTrigger() {
+    if (deferredInstallPrompt) {
+      // Chromium / Android / Desktop flow
+      try {
+        await deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        if (choice && choice.outcome === "accepted") {
+          showToast("Installing Department Legacy App...", "info");
+          setInstallButtonsVisible(false);
+          deferredInstallPrompt = null;
+        }
+      } catch (err) {
+        console.warn("[PWA] Prompt error:", err);
+      }
+    } else if (isIOS) {
+      // iOS Safari guide flow
+      if (iosModal) {
+        iosModal.classList.remove("hidden");
+      }
+    } else {
+      // Ambient fallback instructions
+      showToast("To install: Open browser menu (⋮) and choose 'Install App' or 'Add to Home screen'", "info");
+    }
+  }
+
+  // Attach click listeners to install buttons
+  if (pwaInstallBtn) {
+    pwaInstallBtn.addEventListener("click", handleInstallTrigger);
+  }
+  if (pwaInstallBtnSidebar) {
+    pwaInstallBtnSidebar.addEventListener("click", () => {
+      document.body.classList.remove("nav-open");
+      handleInstallTrigger();
+    });
+  }
+
+  // iOS modal dismissal
+  if (closeIosModal) {
+    closeIosModal.addEventListener("click", () => iosModal?.classList.add("hidden"));
+  }
+  if (dismissIosGuideBtn) {
+    dismissIosGuideBtn.addEventListener("click", () => iosModal?.classList.add("hidden"));
+  }
+  if (iosModal) {
+    iosModal.addEventListener("click", (e) => {
+      if (e.target === iosModal) iosModal.classList.add("hidden");
+    });
+  }
+
+  // Chromium beforeinstallprompt event
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    setInstallButtonsVisible(true);
+  });
+
+  // App installed event
+  window.addEventListener("appinstalled", () => {
+    setInstallButtonsVisible(false);
+    deferredInstallPrompt = null;
+    showToast("Department Legacy App installed successfully!", "success");
+  });
+
+  // If on iOS and not standalone, show install button for Safari users
+  if (isIOS && !isStandalone) {
+    setInstallButtonsVisible(true);
+  }
+
+  // Online / Offline Connectivity Detection
+  function updateOnlineStatus() {
+    const isOnline = navigator.onLine;
+    const statusIndicator = document.querySelector(".system-status .status-indicator");
+    const roleLabel = $("roleLabel");
+
+    if (!isOnline) {
+      if (offlineIndicator) offlineIndicator.classList.remove("hidden");
+      if (statusIndicator) {
+        statusIndicator.classList.remove("online");
+        statusIndicator.classList.add("offline");
+      }
+      if (roleLabel && !roleLabel.dataset.origText) {
+        roleLabel.dataset.origText = roleLabel.textContent;
+        roleLabel.textContent = "Offline (Cached Mode)";
+      }
+      showToast("Network connection lost. Viewing cached records.", "info");
+    } else {
+      if (offlineIndicator) offlineIndicator.classList.add("hidden");
+      if (statusIndicator) {
+        statusIndicator.classList.remove("offline");
+        statusIndicator.classList.add("online");
+      }
+      if (roleLabel && roleLabel.dataset.origText) {
+        roleLabel.textContent = roleLabel.dataset.origText;
+        delete roleLabel.dataset.origText;
+      }
+    }
+  }
+
+  window.addEventListener("online", () => {
+    updateOnlineStatus();
+    showToast("Connection restored. Re-syncing records.", "success");
+    loadPublic().catch(() => {});
+  });
+  window.addEventListener("offline", updateOnlineStatus);
+  if (!navigator.onLine) {
+    updateOnlineStatus();
+  }
+
+  // Service Worker Registration & Update Handling
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", async () => {
+      try {
+        const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+        console.log("[PWA] Service Worker registered with scope:", reg.scope);
+
+        // Check for updates
+        reg.addEventListener("updatefound", () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              if (updateToast) updateToast.classList.remove("hidden");
+            }
+          });
+        });
+
+        // Trigger manual refresh on update banner button click
+        if (refreshBtn) {
+          refreshBtn.addEventListener("click", () => {
+            if (reg.waiting) {
+              reg.waiting.postMessage({ type: "SKIP_WAITING" });
+            }
+          });
+        }
+      } catch (err) {
+        console.warn("[PWA] Service Worker registration failed:", err);
+      }
+    });
+
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+  }
+}
+
+/* ==========================================================================
    APPLICATION BOOTSTRAP
    ========================================================================== */
 async function boot() {
+  initPWA();
   try {
     if (state.token) {
       state.user = await api("/auth/me");
