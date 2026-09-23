@@ -1,172 +1,195 @@
 # Department Legacy Management System
 
-A full-stack web application for the **Department of Information Technology** to preserve, organize, and share departmental legacy records: alumni and student career trajectories, capstone and research archives, historical milestones and accreditations, faculty and laboratory infrastructure, recruiter records and placement statistics, and guest feedback.
-
-The system strictly adheres to the scope defined in `SRS.md` and `REQUIREMENTS.md`. Modules outside the six core functional requirements (such as attendance marking, academic grading/CGPA management, and recruitment workflows) are explicitly excluded.
+A production-ready Progressive Web App (PWA) and digital archive for the **Department of Information Technology**, preserving and celebrating institutional achievements: alumni and student career trajectories, capstone and research archives, historical milestones, faculty and laboratory infrastructure, recruiter records and placement statistics, and visitor inquiries with an integrated AI Legacy Assistant.
 
 ---
 
-## System Architecture
+## Production Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | Responsive Vanilla JavaScript (ES6+), HTML5, CSS3 Custom Properties Design System, Progressive Web App (Service Worker, Web App Manifest, Standalone Mode, Offline Caching) |
+| **Backend** | Node.js (>= 18.0.0 ESM), Express.js REST API, JSON Web Token (JWT) Bearer Authentication, bcryptjs password hashing |
+| **Database** | Dual Architecture: Supabase PostgreSQL (Production Persistent Cloud DB) with automated fallback to High-Fidelity In-Memory Store |
+| **AI Integration** | Google Gemini API (`@google/genai`) with grounded departmental retrieval and structured contextual guidance |
+| **Security** | Production HTTP security headers, CORS protection, JWT Bearer verification, parameter validation, role-based access control (NFR-02 compliance) |
+
+---
+
+## Architecture Overview
 
 ```
-                       ┌─────────────────────────────────────┐
-                       │   Responsive Modern Web Frontend    │
-                       │     HTML5 · CSS3 · Vanilla ES6+     │
-                       └──────────────────┬──────────────────┘
-                                          │ REST API & Static Files
-                                          ▼
-                       ┌─────────────────────────────────────┐
-                       │          FastAPI Backend            │
-                       │ JWT Auth · Pydantic V2 Validation   │
-                       └──────────────────┬──────────────────┘
-                                          │ SQLAlchemy ORM
-                                          ▼
-                       ┌─────────────────────────────────────┐
-                       │          SQLite Database            │
-                       │     backend/data/legacy.db          │
-                       └─────────────────────────────────────┘
+                                  ┌────────────────────────────────────────────────────────┐
+                                  │           Progressive Web Application (PWA)            │
+                                  │      Desktop & Mobile Responsive · Offline Cache       │
+                                  │           Service Worker (sw.js) · Manifest            │
+                                  └───────────────────────────┬────────────────────────────┘
+                                                              │ HTTPS / JSON REST API
+                                                              ▼
+                                  ┌────────────────────────────────────────────────────────┐
+                                  │               Node.js Express Server                   │
+                                  │     JWT Auth · Security Middlewares · Health & CRUD    │
+                                  └─────────────┬────────────────────────────┬─────────────┘
+                                                │                            │
+                                                ▼                            ▼
+                 ┌──────────────────────────────────────────┐    ┌───────────────────────────┐
+                 │       Supabase PostgreSQL Database       │    │     Google Gemini API     │
+                 │   Tables: students, projects, faculty,   │    │  Conversational Assistant │
+                 │      milestones, labs, placements        │    │    Grounded Retrieval     │
+                 └──────────────────────────────────────────┘    └───────────────────────────┘
 ```
 
-- **Frontend (`Frontend/`)**: Modern responsive single-page portal styled with CSS custom properties, responsive sidebar drawer, glassmorphic header, interactive modals, and floating toast notifications.
-- **Backend (`backend/app/`)**: Python FastAPI application implementing JWT Bearer authentication, PBKDF2-SHA256 password hashing, Pydantic v2 schemas, and CORS middleware.
-- **Database (`backend/data/legacy.db`)**: SQLite database automatically provisioned and seeded on initial startup.
+---
+
+## Key Features & Functional Requirements
+
+- **FR-01: Integrated Student & Alumni Directory**: Real-time search, batch filtering, placement trajectories, and full administrative CRUD with unique roll number enforcement.
+- **FR-02: Legacy Project & Research Archive**: Capstone innovations, patents, and research publications filterable by category and year.
+- **FR-03: History & Milestones Timeline**: Chronological accreditation milestones, NBA certifications, and institutional honors.
+- **FR-04: Faculty & Infrastructure Showcase**: Faculty academic portfolios, publication records, and laboratory facility profiles.
+- **FR-05: Placement & Recruiter Records**: Recruiter company directories, compensation packages, and yearly placement analytics.
+- **FR-06: Guest Inquiries & Unified Archive Search**: Global archive keyword search across all categories and an interactive inquiry submission portal.
+- **AI Legacy Assistant**: Natural language assistant grounded in departmental data, answering inquiries about alumni, faculty, projects, and admissions.
+- **Progressive Web App (PWA)**: Installable on Android, iOS, Windows, macOS, and Linux with full offline reading support.
 
 ---
 
-## Features (SRS Mapping)
+## Default Staff Credentials
 
-| SRS ID | Feature | Guest Access | Staff Access |
-| :--- | :--- | :--- | :--- |
-| **FR-01** | **Integrated Student & Alumni Directory** | Search and filter by name, roll number, batch year, company, or role | Full CRUD (Create, Read, Update, Delete) with unique roll number enforcement |
-| **FR-02** | **Legacy Project & Research Archive** | Browse and filter capstone projects, research papers, and technical innovations | Full CRUD management for archive entries |
-| **FR-03** | **Interactive History & Achievements Timeline** | Chronological timeline view of departmental milestones, NBA accreditations, and awards | Full CRUD management for milestone records |
-| **FR-04** | **Faculty & Infrastructure Showcase** | Explore faculty profiles (publications, experience) and laboratory photo gallery | Full CRUD management for faculty and facility records |
-| **FR-05** | **Placement & Recruiter Records** | View recruiter companies, job roles, offers, and package statistics | Full CRUD management for recruiter and placement records |
-| **FR-06** | **Guest Portal with Inquiry & Feedback** | Single unified search across all legacy records; submit inquiries and feedback | Dedicated feedback inbox to review visitor inquiries |
-
-### Additional Capabilities
-- **Staff Dashboard**: Real-time aggregated metrics (students, alumni, projects, milestones, offers, packages, recent students, recent guest inquiries).
-- **Legacy Reports**: Aggregated batch totals and placement statistics by year and recruiter.
-- **Security & Authorization (NFR-02)**: 100% rejection of unauthorized write operations and staff-only endpoints.
-
----
-
-## Default Staff Login
-
-For local development and administrative management:
+For local development and administrative testing:
 - **Username**: `admin`
 - **Password**: `admin123`
 
-*Note: For production deployments, rotate the secret key (`DLMS_SECRET_KEY`) and administrator password.*
+> **Production Security Note**: For production deployments, change `DLMS_SECRET_KEY` in environment variables and rotate the administrator password.
 
 ---
 
-## Local Setup & Installation
+## Environment Variables
+
+Configure these in your hosting provider's environment settings or in a local `.env` file (copied from `.env.example`):
+
+| Variable | Required | Default | Description |
+| :--- | :---: | :--- | :--- |
+| `PORT` | Optional | `3000` | Port on which the HTTP server listens |
+| `NODE_ENV` | Optional | `production` | Node environment (`production` or `development`) |
+| `DLMS_SECRET_KEY` | **Required** in prod | dev fallback | Secret key for signing and verifying JWT tokens |
+| `SUPABASE_URL` | Optional | `""` | Supabase PostgreSQL project URL |
+| `SUPABASE_KEY` | Optional | `""` | Supabase Service Role or Anon API Key |
+| `GEMINI_API_KEY` | Optional | `""` | Google Gemini API Key for conversational AI assistant |
+| `TEST_BASE_URL` | Optional | `http://127.0.0.1:3000` | Target URL for automated integration tests |
+
+---
+
+## Local Setup & Quickstart
 
 ### Prerequisites
-- Python 3.9 or newer (Python 3.9, 3.10, 3.11, 3.12, 3.13 supported)
-- Modern web browser (Chrome, Edge, Firefox, Safari)
+- Node.js >= 18.0.0
+- npm >= 9.0.0
 
-### 1. Windows (PowerShell)
-
-```powershell
-# Navigate to backend folder
-cd c:\prompt\backend
-
-# Create virtual environment (if not already created)
-python -m venv .venv
-
-# Activate virtual environment
-.\.venv\Scripts\Activate.ps1
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. macOS / Linux (Bash / Zsh)
+### Installation & Run
 
 ```bash
-cd backend
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+# 1. Clone repository
+git clone https://github.com/your-username/department-legacy-management-system.git
+cd department-legacy-management-system
+
+# 2. Install dependencies
+npm install
+
+# 3. Configure environment
+cp .env.example .env
+# Edit .env with your preferred settings
+
+# 4. Start development server
+npm run dev
+
+# 5. Access application
+# Open http://localhost:3000 in your browser
 ```
 
 ---
 
-## Running the Application
+## Automated Test Suite
 
-From the `backend` directory with the virtual environment activated:
+Run the full end-to-end integration and API verification test suite:
 
-```powershell
-python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```bash
+npm test
 ```
 
-### Access URLs
-- **Web Application Portal**: [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- **Interactive Swagger API Documentation**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **Alternative ReDoc Documentation**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
-- **API Health Check**: [http://127.0.0.1:8000/api/health](http://127.0.0.1:8000/api/health)
-
----
-
-## Automated Testing
-
-Run the test suite from the `backend` directory:
-
-```powershell
-cd c:\prompt\backend
-.\.venv\Scripts\python.exe -m pytest -v
-```
-
-The test suite validates:
-1. API Health endpoint (`GET /api/health`)
-2. Bad password authentication rejection (401)
-3. Unauthenticated student creation rejection (401)
-4. Full Student CRUD, query filtering, and report aggregation
-5. Feedback input validation (EmailStr, min length)
-6. **NFR-02 Compliance**: 100% rejection of unauthorized requests across all protected staff endpoints
-7. Unique roll number constraint conflict handling (409 Conflict)
+The test runner validates:
+1. `GET /api/health` system health status
+2. Bad password authentication rejection (`401 Unauthorized`)
+3. Unauthenticated mutation rejection (`401 Unauthorized`)
+4. Student & Alumni CRUD, query filters, and report aggregations
+5. Guest inquiry input validation (RFC email compliance and minimum length)
+6. **NFR-02 Compliance**: Unauthorized write rejection across staff endpoints
+7. Unique roll number constraint conflicts (`409 Conflict`)
 8. Project and Milestone CRUD operations
-9. Faculty, Lab, and Placement CRUD operations
-10. Unified Public Search across all five record categories (`GET /api/search?q=...`)
+9. Faculty, Laboratory, and Placement CRUD operations
+10. Unified cross-category search (`GET /api/search?q=...`)
+11-15. AI Chatbot responses (Faculty, Placements, Capstones, Guest Inquiries, and Validation)
 
 ---
 
-## API Reference Summary
+## Production Deployment Guidelines
 
-| Method | Endpoint | Auth Required | Description |
-| :--- | :--- | :---: | :--- |
-| `GET` | `/api/health` | No | System health check |
-| `POST` | `/api/auth/login` | No | Staff authentication (returns JWT bearer token) |
-| `GET` | `/api/auth/me` | Yes | Get currently authenticated user profile |
-| `GET` | `/api/search?q={term}` | No | Unified search across public legacy records |
-| `GET` | `/api/students` | No | List and filter students/alumni (`q`, `batch_year`) |
-| `POST` | `/api/students` | Yes | Create student record (enforces unique `roll_no`) |
-| `PUT` | `/api/students/{id}` | Yes | Update student record |
-| `DELETE`| `/api/students/{id}` | Yes | Delete student record |
-| `GET` | `/api/projects` | No | List legacy projects and research (`q`) |
-| `POST` | `/api/projects` | Yes | Add project or research archive entry |
-| `PUT` | `/api/projects/{id}` | Yes | Update project or research entry |
-| `DELETE`| `/api/projects/{id}` | Yes | Delete project or research entry |
-| `GET` | `/api/milestones` | No | List historical milestones ordered by year |
-| `POST` | `/api/milestones` | Yes | Add milestone record |
-| `PUT` | `/api/milestones/{id}` | Yes | Update milestone record |
-| `DELETE`| `/api/milestones/{id}` | Yes | Delete milestone record |
-| `GET` | `/api/faculty` | No | List faculty profiles |
-| `POST` | `/api/faculty` | Yes | Add faculty profile |
-| `PUT` | `/api/faculty/{id}` | Yes | Update faculty profile |
-| `DELETE`| `/api/faculty/{id}` | Yes | Delete faculty profile |
-| `GET` | `/api/labs` | No | List laboratories and facilities |
-| `POST` | `/api/labs` | Yes | Add laboratory profile |
-| `PUT` | `/api/labs/{id}` | Yes | Update laboratory profile |
-| `DELETE`| `/api/labs/{id}` | Yes | Delete laboratory profile |
-| `GET` | `/api/placements` | No | List recruiter and placement records |
-| `POST` | `/api/placements` | Yes | Add recruiter and placement record |
-| `PUT` | `/api/placements/{id}` | Yes | Update recruiter and placement record |
-| `DELETE`| `/api/placements/{id}` | Yes | Delete recruiter and placement record |
-| `POST` | `/api/feedback` | No | Submit public guest inquiry or feedback |
-| `GET` | `/api/feedback` | Yes | Read guest feedback inbox |
-| `GET` | `/api/dashboard` | Yes | Aggregate dashboard metrics and recent submissions |
-| `GET` | `/api/reports` | Yes | Aggregate batch and yearly placement reports |
+### 1. Google Cloud Run (Recommended Container Deployment)
 
+```bash
+# Build and deploy directly to Cloud Run
+gcloud run deploy dlms-app \
+  --source . \
+  --platform managed \
+  --region asia-southeast1 \
+  --allow-unauthenticated \
+  --set-env-vars NODE_ENV=production,PORT=3000,DLMS_SECRET_KEY="your-strong-production-secret"
+```
+
+### 2. Docker Container
+
+Create a `Dockerfile` in the root directory:
+
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY . .
+ENV NODE_ENV=production
+ENV PORT=3000
+EXPOSE 3000
+USER node
+CMD ["node", "server.js"]
+```
+
+Build and run:
+
+```bash
+docker build -t dlms-app .
+docker run -p 3000:3000 -e DLMS_SECRET_KEY="your-production-secret" dlms-app
+```
+
+### 3. Render / Railway / Heroku
+
+1. Connect your GitHub repository.
+2. Select **Node.js** environment.
+3. Build Command: `npm run build`
+4. Start Command: `npm start`
+5. Configure Environment Variables: `DLMS_SECRET_KEY`, `SUPABASE_URL`, `SUPABASE_KEY`, `GEMINI_API_KEY`.
+
+---
+
+## Database Provisioning with Supabase (Optional)
+
+1. Create a project in [Supabase](https://supabase.com).
+2. Go to the **SQL Editor** in the Supabase dashboard.
+3. Paste the contents of `supabase_schema.sql` and click **Run**.
+4. Retrieve your **Project URL** and **Service Role Key** from Settings > API.
+5. Set `SUPABASE_URL` and `SUPABASE_KEY` in your environment.
+
+---
+
+## License
+
+This project is licensed for the Department of Information Technology, Kongu Engineering College.

@@ -14,8 +14,24 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.DLMS_SECRET_KEY || "dlms-local-dev-secret-change-in-production";
 
+// Security & Production Middlewares
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 app.use(cors());
 app.use(express.json());
+
+// Handle malformed JSON request bodies
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    return res.status(400).json({ detail: "Invalid JSON payload" });
+  }
+  next(err);
+});
 
 // --- AUTH MIDDLEWARE (NFR-02) ---
 async function requireAuth(req, res, next) {
@@ -436,6 +452,15 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(frontendDir, "index.html"));
 });
 
+// Centralized error handler
+app.use((err, req, res, next) => {
+  console.error("[SERVER ERROR]", err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).json({ detail: "Internal Server Error" });
+});
+
 // Start server and trigger initial Supabase check
 const server = app.listen(PORT, "0.0.0.0", async () => {
   console.log(`Department Legacy Management System running on http://0.0.0.0:${PORT}`);
@@ -443,5 +468,21 @@ const server = app.listen(PORT, "0.0.0.0", async () => {
     console.warn("[DB] Background migration notice:", err.message);
   });
 });
+
+// Graceful process shutdown for production containers
+function handleShutdown(signal) {
+  console.log(`[SERVER] Received ${signal}. Initiating graceful shutdown...`);
+  server.close(() => {
+    console.log("[SERVER] HTTP server closed cleanly.");
+    process.exit(0);
+  });
+  setTimeout(() => {
+    console.error("[SERVER] Graceful shutdown timed out; forcing exit.");
+    process.exit(1);
+  }, 10000).unref();
+}
+
+process.on("SIGTERM", () => handleShutdown("SIGTERM"));
+process.on("SIGINT", () => handleShutdown("SIGINT"));
 
 export { app, server };

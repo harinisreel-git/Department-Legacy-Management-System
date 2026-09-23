@@ -1,7 +1,11 @@
 {
   "name": "department-legacy-management-system",
   "version": "1.0.0",
+  "description": "Department Legacy Management System - Progressive Web App digital archive for Department of Information Technology",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
